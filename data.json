@@ -1,0 +1,20 @@
+[
+  {
+    "name": "John Doe",
+    "age": 25,
+    "email": {
+      "personal": "test@test.com",
+      "work": "ok@work.com"
+    },
+    "hobbies": [
+      {
+        "name": "Reading",
+        "level": "Beginner"
+      },
+      {
+        "name": "Swimming",
+        "level": "Intermediate"
+      }
+    ]
+  }
+]
