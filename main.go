@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/mukezhz/json-go-struct/gojson"
+	"github.com/bsdks/json-go-struct/gojson"
 )
 
 func main() {

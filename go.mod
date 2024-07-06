@@ -1,4 +1,4 @@
-module github.com/mukezhz/json-go-struct
+module github.com/bsdks/json-go-struct
 
 go 1.21.5
 
