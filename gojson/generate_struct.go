@@ -53,33 +53,41 @@ func getFieldType(value interface{}, parentStructName string) (string, map[strin
 		}
 		return subStructName, nestedStructs
 	case reflect.Slice:
-		sliceElem := reflect.TypeOf(value).Elem()
-		if len(value.([]interface{})) > 0 {
-			firstElem := value.([]interface{})[0]
-			if sliceElem.Kind() == reflect.Map {
-				subStructName := parentStructName + "Item"
-				subStructDefinition, subNestedStructs := generateStructFromJSON(firstElem.(map[string]interface{}), subStructName)
-				nestedStructs[subStructName] = subStructDefinition
-				for nestedKey, nestedValue := range subNestedStructs {
-					nestedStructs[nestedKey] = nestedValue
-				}
-				return "[]" + subStructName, nestedStructs
-			} else {
-				elemType, subNestedStructs := getFieldType(firstElem, parentStructName)
-				for nestedKey, nestedValue := range subNestedStructs {
-					nestedStructs[nestedKey] = nestedValue
-				}
-				return "[]" + elemType, nestedStructs
-			}
-		}
-		elemType, subNestedStructs := getFieldType(reflect.New(sliceElem).Elem().Interface(), parentStructName)
-		for nestedKey, nestedValue := range subNestedStructs {
-			nestedStructs[nestedKey] = nestedValue
+		elemType, shouldReturn, returnValue, returnValue1 := handleSliceType(value, parentStructName, nestedStructs)
+		if shouldReturn {
+			return returnValue, returnValue1
 		}
 		return "[]" + elemType, nestedStructs
 	default:
 		return "interface{}", nestedStructs
 	}
+}
+
+func handleSliceType(value interface{}, parentStructName string, nestedStructs map[string]string) (string, bool, string, map[string]string) {
+	sliceElem := reflect.TypeOf(value).Elem()
+	if len(value.([]interface{})) > 0 {
+		firstElem := value.([]interface{})[0]
+		if sliceElem.Kind() == reflect.Map {
+			subStructName := parentStructName + "Item"
+			subStructDefinition, subNestedStructs := generateStructFromJSON(firstElem.(map[string]interface{}), subStructName)
+			nestedStructs[subStructName] = subStructDefinition
+			for nestedKey, nestedValue := range subNestedStructs {
+				nestedStructs[nestedKey] = nestedValue
+			}
+			return "", true, "[]" + subStructName, nestedStructs
+		} else {
+			elemType, subNestedStructs := getFieldType(firstElem, parentStructName)
+			for nestedKey, nestedValue := range subNestedStructs {
+				nestedStructs[nestedKey] = nestedValue
+			}
+			return "", true, "[]" + elemType, nestedStructs
+		}
+	}
+	elemType, subNestedStructs := getFieldType(reflect.New(sliceElem).Elem().Interface(), parentStructName)
+	for nestedKey, nestedValue := range subNestedStructs {
+		nestedStructs[nestedKey] = nestedValue
+	}
+	return elemType, false, "", nil
 }
 
 func Gen(jsonData []byte, filePath string, packageName string) {

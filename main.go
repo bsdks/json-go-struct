@@ -9,8 +9,8 @@ import (
 
 func main() {
 	jsonPath := "data.json"
-	filePath := "fun_struct.go"
-	packageName := "dtoss"
+	filePath := "dto_struct.go"
+	packageName := "dto"
 
 	jsonData, err := gojson.ReadJSONFile(jsonPath)
 	if err != nil {
